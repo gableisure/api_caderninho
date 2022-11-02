@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model tb_categoria_produto {
+  id_categoria_produto Int          @id(map: "pk_id_categoria_produto") @default(autoincrement())
+  nome                 String       @db.VarChar(300)
+  dt_inicio_vigencia   DateTime?    @default(dbgenerated("CURRENT_DATE")) @db.Date
+  dt_fim_vigencia      DateTime?    @db.Date
+  tb_produto           tb_produto[]
+}
+
+model tb_cliente {
+  id_cliente         Int                @id(map: "pk_id_cliente") @default(autoincrement())
+  id_estabelecimento Int
+  nome               String             @db.VarChar(200)
+  telefone           String?            @db.VarChar(22)
+  celular            String?            @db.VarChar(22)
+  descricao          String?            @db.VarChar(300)
+  dt_inicio_vigencia DateTime?          @default(dbgenerated("CURRENT_DATE")) @db.Date
+  dt_fim_vigencia    DateTime?          @db.Date
+  tb_estabelecimento tb_estabelecimento @relation(fields: [id_estabelecimento], references: [id_estabelecimento], onDelete: NoAction, onUpdate: NoAction, map: "fk_id_estabelecimento")
+  tb_conta           tb_conta[]
+}
+
+model tb_conta {
+  id_conta           Int                  @id(map: "pk_id_conta") @default(autoincrement())
+  id_usuario         Int
+  id_cliente         Int
+  desconto           Decimal?             @db.Decimal
+  observacao         String?              @db.VarChar(300)
+  dt_inicio_vigencia DateTime?            @default(dbgenerated("CURRENT_DATE")) @db.Date
+  dt_fim_vigencia    DateTime?            @db.Date
+  tb_cliente         tb_cliente           @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction, map: "fk_id_cliente")
+  tb_usuario         tb_usuario           @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "fk_id_usuario")
+  tb_conta_pagamento tb_conta_pagamento[]
+  tb_conta_produto   tb_conta_produto[]
+}
+
+model tb_conta_pagamento {
+  id_conta_pagamento Int          @id(map: "pk_id_conta_pagamento") @default(autoincrement())
+  id_conta           Int
+  id_pagamento       Int
+  tb_conta           tb_conta     @relation(fields: [id_conta], references: [id_conta], onDelete: NoAction, onUpdate: NoAction, map: "fk_id_conta")
+  tb_pagamento       tb_pagamento @relation(fields: [id_pagamento], references: [id_pagamento], onDelete: NoAction, onUpdate: NoAction, map: "fk_id_pagamento")
+}
+
+model tb_conta_produto {
+  id_conta_produto Int        @id(map: "pk_id_conta_produto") @default(autoincrement())
+  id_conta         Int
+  id_produto       Int
+  qtd_unidade      Int
+  tb_conta         tb_conta   @relation(fields: [id_conta], references: [id_conta], onDelete: NoAction, onUpdate: NoAction, map: "fk_id_conta")
+  tb_produto       tb_produto @relation(fields: [id_produto], references: [id_produto], onDelete: NoAction, onUpdate: NoAction, map: "fk_id_produto")
+}
+
+model tb_estabelecimento {
+  id_estabelecimento Int          @id(map: "pk_id_estabelecimento") @default(autoincrement())
+  id_plano           Int
+  nome               String       @db.VarChar(200)
+  cnpj               String?      @db.VarChar(20)
+  endereco           String?      @db.VarChar(300)
+  estado             String?      @db.VarChar(30)
+  municipio          String?      @db.VarChar(50)
+  dt_inicio_vigencia DateTime?    @default(dbgenerated("CURRENT_DATE")) @db.Date
+  dt_fim_vigencia    DateTime?    @db.Date
+  tb_plano           tb_plano     @relation(fields: [id_plano], references: [id_plano], onDelete: NoAction, onUpdate: NoAction, map: "fk_id_plano")
+  tb_cliente         tb_cliente[]
+  tb_produto         tb_produto[]
+  tb_usuario         tb_usuario[]
+}
+
+model tb_forma_pagamento {
+  id_forma_pagamento Int            @id(map: "pk_forma_pagamento") @default(autoincrement())
+  ds_forma_pagamento String         @db.VarChar(200)
+  dt_inicio_vigencia DateTime?      @default(dbgenerated("CURRENT_DATE")) @db.Date
+  dt_fim_vigencia    DateTime?      @db.Date
+  tb_pagamento       tb_pagamento[]
+}
+
+model tb_pagamento {
+  id_pagamento       Int                  @id(map: "pk_id_pagamento") @default(autoincrement())
+  id_forma_pagamento Int
+  valor              Decimal              @db.Decimal
+  dt_pagamento       DateTime?            @default(dbgenerated("CURRENT_DATE")) @db.Date
+  tb_forma_pagamento tb_forma_pagamento   @relation(fields: [id_forma_pagamento], references: [id_forma_pagamento], onDelete: NoAction, onUpdate: NoAction, map: "fk_id_forma_pagamento")
+  tb_conta_pagamento tb_conta_pagamento[]
+}
+
+model tb_plano {
+  id_plano                   Int                         @id(map: "pk_id_plano") @default(autoincrement())
+  id_plano_adicional_usuario Int?
+  descricao                  String                      @unique @db.VarChar(200)
+  limite_usuarios            Int
+  valor                      Decimal                     @db.Decimal
+  dt_inicio_vigencia         DateTime?                   @default(dbgenerated("CURRENT_DATE")) @db.Date
+  dt_fim_vigencia            DateTime?                   @db.Date
+  tb_plano_adicional_usuario tb_plano_adicional_usuario? @relation(fields: [id_plano_adicional_usuario], references: [id_plano_adicional_usuario], onDelete: NoAction, onUpdate: NoAction, map: "fk_id_plano_adicional_usuario")
+  tb_estabelecimento         tb_estabelecimento[]
+}
+
+model tb_plano_adicional_usuario {
+  id_plano_adicional_usuario Int        @id(map: "pk_id_plano_adicional_usuario") @default(autoincrement())
+  descricao                  String     @unique @db.VarChar(200)
+  limite_usuarios            Int
+  valor                      Decimal    @db.Decimal
+  dt_inicio_vigencia         DateTime?  @default(dbgenerated("CURRENT_DATE")) @db.Date
+  dt_fim_vigencia            DateTime?  @db.Date
+  tb_plano                   tb_plano[]
+}
+
+model tb_produto {
+  id_produto           Int                  @id(map: "pk_id_produto") @default(autoincrement())
+  id_categoria_produto Int
+  id_estabelecimento   Int
+  nome                 String               @unique @db.VarChar(200)
+  valor                Decimal              @db.Decimal
+  dt_inicio_vigencia   DateTime?            @default(dbgenerated("CURRENT_DATE")) @db.Date
+  dt_fim_vigencia      DateTime?            @db.Date
+  tb_categoria_produto tb_categoria_produto @relation(fields: [id_categoria_produto], references: [id_categoria_produto], onDelete: NoAction, onUpdate: NoAction, map: "fk_id_categoria_produto")
+  tb_estabelecimento   tb_estabelecimento   @relation(fields: [id_estabelecimento], references: [id_estabelecimento], onDelete: NoAction, onUpdate: NoAction, map: "fk_id_estabelecimento")
+  tb_conta_produto     tb_conta_produto[]
+}
+
+model tb_usuario {
+  id_usuario         Int                @id(map: "pk_id_usuario") @default(autoincrement())
+  id_estabelecimento Int
+  nome               String             @db.VarChar(200)
+  email              String             @unique @db.VarChar(100)
+  telefone           String?            @db.VarChar(22)
+  celular            String?            @db.VarChar(22)
+  dt_inicio_vigencia DateTime?          @default(dbgenerated("CURRENT_DATE")) @db.Date
+  dt_fim_vigencia    DateTime?          @db.Date
+  tb_estabelecimento tb_estabelecimento @relation(fields: [id_estabelecimento], references: [id_estabelecimento], onDelete: NoAction, onUpdate: NoAction, map: "fk_id_estabelecimento")
+  tb_conta           tb_conta[]
+}
