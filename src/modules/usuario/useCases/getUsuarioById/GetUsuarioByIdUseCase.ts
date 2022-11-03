@@ -7,7 +7,7 @@ export class GetUsuarioByIdUseCase  {
     async execute({ id_usuario }: GetUsuarioByIdDTO): Promise<tb_usuario> {
         const usuarioExists = await prisma.tb_usuario.findUnique({
             where: {
-                id_usuario: id_usuario
+                id_usuario
             }
         });
 

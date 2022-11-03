@@ -5,7 +5,9 @@ export class UpdateUsuarioController {
     async handle(req: Request, res: Response) {
         const id_usuario = Number(req.params.id);
 
-        const { nome, email, telefone, celular, dt_fim_vigencia } = req.body;
+        const { nome, email, telefone, celular } = req.body;
+
+        const dt_fim_vigencia = new Date(req.body.dt_fim_vigencia).toISOString();
 
         const updateUsuarioUseCase = new UpdateUsuarioUseCase();
         

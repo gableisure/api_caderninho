@@ -10,8 +10,6 @@ export class CreateUsuarioController {
 
         const usuario = await createUsuarioUseCase.execute({ id_estabelecimento, nome, email });
 
-        console.log(usuario)
-
         res.status(200).json(usuario);
     }
 }
