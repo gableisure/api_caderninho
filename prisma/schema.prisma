@@ -32,7 +32,7 @@ model tb_conta {
   id_conta           Int                  @id(map: "pk_id_conta") @default(autoincrement())
   id_usuario         Int
   id_cliente         Int
-  desconto           Decimal?             @db.Decimal
+  desconto           Decimal?             @db.Decimal(10, 2)
   observacao         String?              @db.VarChar(300)
   dt_inicio_vigencia DateTime?            @default(dbgenerated("CURRENT_DATE")) @db.Date
   dt_fim_vigencia    DateTime?            @db.Date
@@ -86,7 +86,7 @@ model tb_forma_pagamento {
 model tb_pagamento {
   id_pagamento       Int                  @id(map: "pk_id_pagamento") @default(autoincrement())
   id_forma_pagamento Int
-  valor              Decimal              @db.Decimal
+  valor              Decimal              @db.Decimal(10, 2)
   dt_pagamento       DateTime?            @default(dbgenerated("CURRENT_DATE")) @db.Date
   tb_forma_pagamento tb_forma_pagamento   @relation(fields: [id_forma_pagamento], references: [id_forma_pagamento], onDelete: NoAction, onUpdate: NoAction, map: "fk_id_forma_pagamento")
   tb_conta_pagamento tb_conta_pagamento[]
@@ -97,7 +97,7 @@ model tb_plano {
   id_plano_adicional_usuario Int?
   descricao                  String                      @unique @db.VarChar(200)
   limite_usuarios            Int
-  valor                      Decimal                     @db.Decimal
+  valor                      Decimal                     @db.Decimal(10, 2)
   dt_inicio_vigencia         DateTime?                   @default(dbgenerated("CURRENT_DATE")) @db.Date
   dt_fim_vigencia            DateTime?                   @db.Date
   tb_plano_adicional_usuario tb_plano_adicional_usuario? @relation(fields: [id_plano_adicional_usuario], references: [id_plano_adicional_usuario], onDelete: NoAction, onUpdate: NoAction, map: "fk_id_plano_adicional_usuario")
@@ -108,7 +108,7 @@ model tb_plano_adicional_usuario {
   id_plano_adicional_usuario Int        @id(map: "pk_id_plano_adicional_usuario") @default(autoincrement())
   descricao                  String     @unique @db.VarChar(200)
   limite_usuarios            Int
-  valor                      Decimal    @db.Decimal
+  valor                      Decimal    @db.Decimal(10, 2)
   dt_inicio_vigencia         DateTime?  @default(dbgenerated("CURRENT_DATE")) @db.Date
   dt_fim_vigencia            DateTime?  @db.Date
   tb_plano                   tb_plano[]
@@ -119,7 +119,7 @@ model tb_produto {
   id_categoria_produto Int
   id_estabelecimento   Int
   nome                 String               @unique @db.VarChar(200)
-  valor                Decimal              @db.Decimal
+  valor                Decimal              @db.Decimal(10, 2)
   dt_inicio_vigencia   DateTime?            @default(dbgenerated("CURRENT_DATE")) @db.Date
   dt_fim_vigencia      DateTime?            @db.Date
   tb_categoria_produto tb_categoria_produto @relation(fields: [id_categoria_produto], references: [id_categoria_produto], onDelete: NoAction, onUpdate: NoAction, map: "fk_id_categoria_produto")
@@ -132,6 +132,7 @@ model tb_usuario {
   id_estabelecimento Int
   nome               String             @db.VarChar(200)
   email              String             @unique @db.VarChar(100)
+  password           String
   telefone           String?            @db.VarChar(22)
   celular            String?            @db.VarChar(22)
   dt_inicio_vigencia DateTime?          @default(dbgenerated("CURRENT_DATE")) @db.Date

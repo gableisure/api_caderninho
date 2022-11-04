@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { AuthController } from "../auth/useCases/AuthController";
 import { CreateUsuarioController } from "../modules/usuario/useCases/createUsuario/CreateUsuarioController";
 import { GetAllUsuarioController } from "../modules/usuario/useCases/getAllUsuario/GetAllUsuarioController";
 import { GetUsuarioByIdController } from "../modules/usuario/useCases/getUsuarioById/GetUsuarioByIdController";
